@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='opentrons_functions',
@@ -10,7 +10,7 @@ setup(
     license='MIT License',
     packages=find_packages(),
     install_requires=['numpy',                     
-                      ],
+                      'opentrons'],
 
     classifiers=[
         'Development Status :: 1 - Planning',
