@@ -2,7 +2,7 @@ import pytest
 import logging
 from opentrons import simulate
 from opentrons.simulate import get_protocol_api, CommandScraper
-from opentrons_functions.transfer import *
+from opentrons_functions.transfer import add_buffer
 
 apilevel = '2.5'
 

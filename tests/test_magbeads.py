@@ -2,7 +2,7 @@ import pytest
 import logging
 from opentrons import simulate
 from opentrons.simulate import get_protocol_api, CommandScraper
-from opentrons_functions.magbeads import *
+from opentrons_functions.magbeads import bead_mix, remove_supernatant, bead_wash
 
 def test_bead_mix():
     protocol = get_protocol_api('2.5')
@@ -147,3 +147,93 @@ def test_remove_supernatant():
     obs = [x['payload']['text'] for x in scraper.commands]
 
     assert exp == obs
+
+
+
+
+
+def test_bead_wash():
+    apilevel='2.5'
+    protocol = get_protocol_api(apilevel)
+    scraper = CommandScraper(logging.getLogger('opentrons'),
+                     '1',
+                     protocol.broker)
+
+    tips = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
+    plate = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
+                                   3, 'plate')
+    reagents = protocol.load_labware('nest_12_reservoir_15ml',
+                                     9, 'reagents')
+    waste = protocol.load_labware('nest_1_reservoir_195ml',
+                                      7, 'waste')
+    pipette = protocol.load_instrument('p300_multi', 
+                                       'left',
+                                       tip_racks=[tips])
+    magblock = protocol.load_module('Magnetic Module', 10)
+    mag_plate = magblock.load_labware('biorad_96_wellplate_200ul_pcr')
+
+    cols = ['A1']
+
+    remaining, wells = bead_wash(# global arguments
+                                 protocol,
+                                 magblock,
+                                 pipette,
+                                 mag_plate,
+                                 cols,
+                                 # super arguments
+                                 waste['A1'],
+                                 tips,
+                                 # wash buffer arguments
+                                 [reagents['A1']],
+                                 20000/8,
+                                 # mix arguments
+                                 tips,
+                                 # optional arguments
+                                 super_vol=150,
+                                 rate=0.25,
+                                 super_bottom_offset=2,
+                                 drop_super_tip=True,
+                                 wash_vol=150,
+                                 remaining=None,
+                                 wash_tip=None,
+                                 drop_wash_tip=True,
+                                 mix_vol=200,
+                                 mix_n=2,
+                                 drop_mix_tip=False,
+                                 mag_engage_height=None,
+                                 pause_s=300
+                                 )
+    assert remaining ==  pytest.approx(2350.0)
+    assert wells == [reagents['A1']]
+
+    exp = ['Picking up tip from A1 of Opentrons 96 Tip Rack 300 µL on 8',
+           'Aspirating 150.0 uL from A1 of Bio-Rad 96 Well Plate 200 µL PCR on Magnetic Module GEN1 on 10 at 0.25 speed',
+           'Air gap',
+           'Aspirating 10.0 uL from A1 of Bio-Rad 96 Well Plate 200 µL PCR on Magnetic Module GEN1 on 10 at 1.0 speed',
+           'Dispensing 160.0 uL into A1 of waste on 7 at 1.0 speed',
+           'Blowing out',
+           'Dropping tip into A1 of Opentrons Fixed Trash on 12',
+           'Disengaging Magnetic Module',
+           'Picking up tip from A2 of Opentrons 96 Tip Rack 300 µL on 8',
+           'Aspirating 150.0 uL from A1 of reagents on 9 at 1.0 speed',
+           'Air gap',
+           'Aspirating 10.0 uL from A1 of reagents on 9 at 1.0 speed',
+           'Dispensing 160.0 uL into A1 of Bio-Rad 96 Well Plate 200 µL PCR on Magnetic Module GEN1 on 10 at 1.0 speed',
+           'Blowing out',
+           'Dropping tip into A1 of Opentrons Fixed Trash on 12',
+           'Picking up tip from A1 of Opentrons 96 Tip Rack 300 µL on 8',
+           'Mixing 2 times with a volume of 200.0 ul',
+           'Aspirating 200.0 uL from A1 of Bio-Rad 96 Well Plate 200 µL PCR on Magnetic Module GEN1 on 10 at 1.0 speed',
+           'Dispensing 200.0 uL into A1 of Bio-Rad 96 Well Plate 200 µL PCR on Magnetic Module GEN1 on 10 at 1.0 speed',
+           'Aspirating 200.0 uL from A1 of Bio-Rad 96 Well Plate 200 µL PCR on Magnetic Module GEN1 on 10 at 1.0 speed',
+           'Dispensing 200.0 uL into A1 of Bio-Rad 96 Well Plate 200 µL PCR on Magnetic Module GEN1 on 10 at 1.0 speed',
+           'Blowing out at A1 of Bio-Rad 96 Well Plate 200 µL PCR on Magnetic Module GEN1 on 10',
+           'Returning tip',
+           'Dropping tip into A1 of Opentrons 96 Tip Rack 300 µL on 8',
+           'Engaging Magnetic Module',
+           'Delaying for 5 minutes and 0 seconds']
+
+    obs = [x['payload']['text'] for x in scraper.commands]
+
+    assert exp == obs
+

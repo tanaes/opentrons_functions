@@ -1,4 +1,6 @@
 from numpy import ceil
+from opentrons_functions.transfer import add_buffer
+
 
 def bead_mix(pipette,
              plate,
@@ -58,3 +60,108 @@ def remove_supernatant(pipette,
         else:
             pipette.return_tip() 
     return()
+
+
+def bead_wash(# global arguments
+              protocol,
+              magblock,
+              pipette,
+              plate,
+              cols,
+              # super arguments
+              super_waste,
+              super_tiprack,
+              # wash buffer arguments
+              source_wells,
+              source_vol,
+              # mix arguments
+              mix_tiprack,
+              # optional arguments
+              super_vol=600,
+              rate=0.25,
+              super_bottom_offset=2,
+              drop_super_tip=True,
+              wash_vol=300,
+              remaining=None,
+              wash_tip=None,
+              drop_wash_tip=True,
+              mix_vol=200,
+              mix_n=10,
+              drop_mix_tip=False,
+              mag_engage_height=None,
+              pause_s=300
+              ):
+    # Wash
+
+    # This should:
+    # - pick up tip from position 7
+    # - pick up 190 µL from the mag plate
+    # - air gap
+    # - dispense into position 11
+    # - repeat x 
+    # - trash tip
+    # - move to next column
+    # - disengage magnet
+
+    # remove supernatant
+    remove_supernatant(pipette,
+                       plate,
+                       cols,
+                       super_tiprack,
+                       super_waste,
+                       super_vol=super_vol,
+                       rate=rate,
+                       bottom_offset=super_bottom_offset,
+                       drop_tip=drop_super_tip)
+        
+    # disengage magnet
+    magblock.disengage()
+
+
+    # This should:
+    # - Pick up tips from column 3 of location 2
+    # - pick up isopropanol from position 5 column 3
+    # - dispense to `cols` in mag plate
+    # - pick up isopropanol from position 5 column 4
+    # - dispense to `cols` in mag plate
+    # - drop tips at end
+
+
+    # add isopropanol
+    wash_wells, wash_remaining = add_buffer(pipette,
+                                            source_wells,
+                                            plate,
+                                            cols,
+                                            wash_vol,
+                                            source_vol,
+                                            tip=wash_tip,
+                                            remaining=remaining,
+                                            drop_tip=drop_wash_tip)
+
+
+    # This should:
+    # - grab a tip from position 8
+    # - mix 5 times the corresponding well on mag plate
+    # - blow out
+    # - return tip
+    # - do next col
+    # - engage magnet
+
+    # mix
+    bead_mix(pipette,
+             plate,
+             cols,
+             mix_tiprack,
+             n=mix_n,
+             mix_vol=mix_vol,
+             drop_tip=drop_mix_tip)
+
+    # engage magnet
+    if mag_engage_height is not None:
+        magblock.engage(height_from_base=mag_engage_height)
+    else:
+        magblock.engage()
+
+    protocol.delay(seconds=pause_s)
+
+    return(wash_wells, wash_remaining)
