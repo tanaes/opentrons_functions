@@ -11,7 +11,7 @@ def add_buffer(pipette,
                tip_vol=300,
                remaining=None,
                drop_tip=True,
-               dead_vol=0.05):
+               dead_vol=1000/8):
     
     if tip is not None:
         pipette.pick_up_tip(tip)
@@ -35,12 +35,13 @@ def add_buffer(pipette,
 
             remaining -= transfer_vol
 
-            if remaining < transfer_vol + source_vol * dead_vol:
+            if remaining < transfer_vol + dead_vol:
                 source_wells.pop(0)
                 try:
                     source_well = source_wells[0]
                 except IndexError:
                     print('Ran out of source wells!')
+                    raise
                 remaining = source_vol
 
         pipette.blow_out()
