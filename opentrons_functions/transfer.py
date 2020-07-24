@@ -1,13 +1,54 @@
 from opentrons import protocol_api
+from numpy import ceil
 
-def example():
-    return(1)
+def add_buffer(pipette,
+               source_wells,
+               dest,
+               cols,
+               vol,               
+               source_vol,
+               tip=None,
+               tip_vol=300,
+               remaining=None,
+               drop_tip=True,
+               dead_vol=0.05):
+    
+    if tip is not None:
+        pipette.pick_up_tip(tip)
+    else:
+        pipette.pick_up_tip()
 
-def simple_transfer(pipette,
-                    source,
-                    dest,
-                    vol=10):
-    pipette.transfer(vol,
-                     source,
-                     dest)
+    source_well = source_wells[0]
+    if remaining is None:
+        remaining = source_vol
+
+    transfers = int(ceil(vol/(tip_vol-10)))
+    transfer_vol = vol/transfers
+
+    for col in cols:
+        for i in range(0,transfers):
+            pipette.aspirate(transfer_vol, 
+                             source_well)
+            pipette.air_gap(10)
+            pipette.dispense(transfer_vol + 10, 
+                             dest[col].top())
+
+            remaining -= transfer_vol
+
+            if remaining < transfer_vol + source_vol * dead_vol:
+                source_wells.pop(0)
+                try:
+                    source_well = source_wells[0]
+                except IndexError:
+                    print('Ran out of source wells!')
+                remaining = source_vol
+
+        pipette.blow_out()
+
+    if drop_tip:
+        pipette.drop_tip()
+    else:
+        pipette.return_tip() 
+
+    return(remaining, source_wells)
 
