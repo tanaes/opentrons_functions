@@ -18,3 +18,4 @@ def bead_mix(pipette,
         else:
             pipette.return_tip()
     return()
+

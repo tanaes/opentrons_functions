@@ -99,3 +99,4 @@ def test_bead_mix_2cols():
     obs = [x['payload']['text'] for x in scraper.commands]
 
     assert exp == obs
+
