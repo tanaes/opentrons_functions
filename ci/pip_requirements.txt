@@ -1,2 +1,2 @@
 coveralls
-opentrons
+opentrons==3.19.0
