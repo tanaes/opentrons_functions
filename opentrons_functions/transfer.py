@@ -1,18 +1,18 @@
-from opentrons import protocol_api
 from numpy import ceil
+
 
 def add_buffer(pipette,
                source_wells,
                dest,
                cols,
-               vol,               
+               vol,
                source_vol,
                tip=None,
                tip_vol=300,
                remaining=None,
                drop_tip=True,
-               dead_vol=1000/8):
-    
+               dead_vol=1000 / 8):
+
     if tip is not None:
         pipette.pick_up_tip(tip)
     else:
@@ -22,15 +22,15 @@ def add_buffer(pipette,
     if remaining is None:
         remaining = source_vol
 
-    transfers = int(ceil(vol/(tip_vol-10)))
-    transfer_vol = vol/transfers
+    transfers = int(ceil(vol / (tip_vol - 10)))
+    transfer_vol = vol / transfers
 
     for col in cols:
-        for i in range(0,transfers):
-            pipette.aspirate(transfer_vol, 
+        for i in range(0, transfers):
+            pipette.aspirate(transfer_vol,
                              source_well)
             pipette.air_gap(10)
-            pipette.dispense(transfer_vol + 10, 
+            pipette.dispense(transfer_vol + 10,
                              dest[col].top())
 
             remaining -= transfer_vol
@@ -49,7 +49,6 @@ def add_buffer(pipette,
     if drop_tip:
         pipette.drop_tip()
     else:
-        pipette.return_tip() 
+        pipette.return_tip()
 
     return(remaining, source_wells)
-

@@ -1,4 +1,3 @@
-from numpy import ceil
 from opentrons_functions.transfer import add_buffer
 
 
@@ -12,7 +11,7 @@ def bead_mix(pipette,
              drop_tip=False):
     for col in cols:
         pipette.pick_up_tip(tiprack.wells_by_name()[col])
-        pipette.mix(n, 
+        pipette.mix(n,
                     mix_vol,
                     plate[col].bottom(z=z_offset))
         pipette.blow_out(plate[col].top())
@@ -22,6 +21,7 @@ def bead_mix(pipette,
         else:
             pipette.return_tip()
     return()
+
 
 def remove_supernatant(pipette,
                        plate,
@@ -35,14 +35,13 @@ def remove_supernatant(pipette,
                        drop_tip=False):
 
     # remove supernatant
-    
+
     for col in cols:
         vol_remaining = super_vol
         # transfers to remove supernatant:
         pipette.pick_up_tip(tiprack.wells_by_name()[col])
-        transfers = int(ceil(super_vol/(tip_vol-10)))
         while vol_remaining > 0:
-            transfer_vol = min(vol_remaining, (tip_vol-10))
+            transfer_vol = min(vol_remaining, (tip_vol - 10))
             if vol_remaining <= 190:
                 z_height = bottom_offset
             else:
@@ -58,39 +57,39 @@ def remove_supernatant(pipette,
         if drop_tip:
             pipette.drop_tip()
         else:
-            pipette.return_tip() 
+            pipette.return_tip()
     return()
 
 
-def bead_wash(# global arguments
-              protocol,
-              magblock,
-              pipette,
-              plate,
-              cols,
-              # super arguments
-              super_waste,
-              super_tiprack,
-              # wash buffer arguments
-              source_wells,
-              source_vol,
-              # mix arguments
-              mix_tiprack,
-              # optional arguments
-              super_vol=600,
-              rate=0.25,
-              super_bottom_offset=2,
-              drop_super_tip=True,
-              wash_vol=300,
-              remaining=None,
-              wash_tip=None,
-              drop_wash_tip=True,
-              mix_vol=200,
-              mix_n=10,
-              drop_mix_tip=False,
-              mag_engage_height=None,
-              pause_s=300
-              ):
+def bead_wash(  # global arguments
+    protocol,
+    magblock,
+    pipette,
+    plate,
+    cols,
+    # super arguments
+    super_waste,
+    super_tiprack,
+    # wash buffer arguments
+    source_wells,
+    source_vol,
+    # mix arguments
+    mix_tiprack,
+    # optional arguments
+    super_vol=600,
+    rate=0.25,
+    super_bottom_offset=2,
+    drop_super_tip=True,
+    wash_vol=300,
+    remaining=None,
+    wash_tip=None,
+    drop_wash_tip=True,
+    mix_vol=200,
+    mix_n=10,
+    drop_mix_tip=False,
+    mag_engage_height=None,
+    pause_s=300
+):
     # Wash
 
     # This should:
@@ -98,7 +97,7 @@ def bead_wash(# global arguments
     # - pick up 190 µL from the mag plate
     # - air gap
     # - dispense into position 11
-    # - repeat x 
+    # - repeat x
     # - trash tip
     # - move to next column
     # - disengage magnet
@@ -113,10 +112,9 @@ def bead_wash(# global arguments
                        rate=rate,
                        bottom_offset=super_bottom_offset,
                        drop_tip=drop_super_tip)
-        
+
     # disengage magnet
     magblock.disengage()
-
 
     # This should:
     # - Pick up tips from column 3 of location 2
@@ -125,7 +123,6 @@ def bead_wash(# global arguments
     # - pick up isopropanol from position 5 column 4
     # - dispense to `cols` in mag plate
     # - drop tips at end
-
 
     # add isopropanol
     wash_wells, wash_remaining = add_buffer(pipette,
@@ -137,7 +134,6 @@ def bead_wash(# global arguments
                                             tip=wash_tip,
                                             remaining=remaining,
                                             drop_tip=drop_wash_tip)
-
 
     # This should:
     # - grab a tip from position 8

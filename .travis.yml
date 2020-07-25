@@ -16,6 +16,7 @@ before_script:
   - export DISPLAY=:99.0
 script:
   - pytest ./
+  - flake8
 notifications:
   webhooks:
     on_success: change
