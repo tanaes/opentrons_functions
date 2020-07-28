@@ -15,7 +15,7 @@ install:
 before_script:
   - export DISPLAY=:99.0
 script:
-  - pytest ./
+  - pytest -v ./
   - flake8
 notifications:
   webhooks:

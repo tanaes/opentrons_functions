@@ -1,7 +1,8 @@
 import pytest
 import logging
 from opentrons.simulate import get_protocol_api, CommandScraper
-from opentrons_functions.transfer import add_buffer
+from opentrons_functions.transfer import (add_buffer,
+                                          get_96_from_384_wells)
 
 apilevel = '2.5'
 
@@ -103,3 +104,27 @@ def test_add_buffer_fullplate():
 
     assert remaining == 1300
     assert source_wells == [reagents['A2']]
+
+
+def test_get_96_from_384_wells_interleaved():
+    a = [x for x in get_96_from_384_wells(method='interleaved', start=1)][0:3]
+    b = [x for x in get_96_from_384_wells(method='interleaved', start=2)][0:3]
+    c = [x for x in get_96_from_384_wells(method='interleaved', start=3)][0:3]
+    d = [x for x in get_96_from_384_wells(method='interleaved', start=4)][0:3]
+
+    assert a == ['A1', 'C1', 'E1']
+    assert b == ['B1', 'D1', 'F1']
+    assert c == ['A2', 'C2', 'E2']
+    assert d == ['B2', 'D2', 'F2']
+
+
+def test_get_96_from_384_wells_packed():
+    a = [x for x in get_96_from_384_wells(method='packed', start=1)][0:3]
+    b = [x for x in get_96_from_384_wells(method='packed', start=2)][0:3]
+    c = [x for x in get_96_from_384_wells(method='packed', start=3)][0:3]
+    d = [x for x in get_96_from_384_wells(method='packed', start=4)][0:3]
+
+    assert a == ['A1', 'C1', 'E1']
+    assert b == ['A7', 'C7', 'E7']
+    assert c == ['A13', 'C13', 'E13']
+    assert d == ['A19', 'C19', 'E19']

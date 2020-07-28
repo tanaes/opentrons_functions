@@ -59,3 +59,25 @@ def add_buffer(pipette,
         pipette.return_tip()
 
     return(remaining, source_wells)
+
+
+def get_96_from_384_wells(method='interleaved', start=1):
+    if method == 'interleaved':
+        rows = [chr(64 + x * 2 - (start % 2))
+                for x in range(1, 9)]
+        cols = [x * 2 - int((start + 1) / 2) % 2
+                for x in range(1, 13)]
+
+        for col in cols:
+            for row in rows:
+                yield('%s%s' % (row, col))
+
+    if method == 'packed':
+        for col in range((start - 1) * 6 + 1,
+                         (start - 1) * 6 + 7):
+            for row in [chr(x + 65) for x in range(0, 16, 2)]:
+                yield('%s%s' % (row, col))
+        for col in range((start - 1) * 6 + 1,
+                         (start - 1) * 6 + 7):
+            for row in [chr(x + 65) for x in range(1, 17, 2)]:
+                yield('%s%s' % (row, col))
