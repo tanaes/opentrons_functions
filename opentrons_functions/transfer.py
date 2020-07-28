@@ -11,6 +11,7 @@ def add_buffer(pipette,
                tip_vol=300,
                remaining=None,
                drop_tip=True,
+               pre_mix=None,
                dead_vol=1000 / 8):
 
     if tip is not None:
@@ -24,6 +25,12 @@ def add_buffer(pipette,
 
     transfers = int(ceil(vol / (tip_vol - 10)))
     transfer_vol = vol / transfers
+
+    if pre_mix is not None:
+        for well in source_wells:
+            pipette.mix(pre_mix,
+                        tip_vol*.9,
+                        well)
 
     for col in cols:
         for i in range(0, transfers):
