@@ -1,4 +1,6 @@
+from opentrons import types
 from opentrons_functions.transfer import add_buffer
+from opentrons_functions.util import odd_or_even
 
 
 def bead_mix(pipette,
@@ -161,3 +163,42 @@ def bead_wash(  # global arguments
     protocol.delay(seconds=pause_s)
 
     return(wash_wells, wash_remaining)
+
+
+def transfer_elute(pipette,
+                   source,
+                   dest,
+                   cols,
+                   tiprack,
+                   vol,
+                   z_offset=0.5,
+                   x_offset=1,
+                   rate=0.25,
+                   drop_tip=True,
+                   mix_n=None,
+                   mix_vol=None):
+
+    for col in cols:
+        # determine offset
+        side = odd_or_even(col)
+        offset = (-1)**side * x_offset
+
+        center_loc = source[col].bottom(z=z_offset)
+        offset_loc = center_loc.move(types.Point(x=offset,
+                                                 y=0,
+                                                 z=0))
+
+        pipette.pick_up_tip(tiprack[col])
+        pipette.aspirate(vol, offset_loc, rate=rate)
+        pipette.dispense(vol, dest[col])
+
+        if mix_n is not None:
+            pipette.mix(mix_n,
+                        mix_vol,
+                        dest[col].bottom(z=1))
+            pipette.blow_out(dest[col].top())
+
+        if drop_tip:
+            pipette.drop_tip()
+        else:
+            pipette.return_tip()
