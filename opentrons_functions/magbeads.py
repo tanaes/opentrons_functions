@@ -81,10 +81,12 @@ def bead_wash(  # global arguments
     super_vol=600,
     rate=0.25,
     super_bottom_offset=2,
+    super_tip_vol=200,
     drop_super_tip=True,
     wash_vol=300,
     remaining=None,
     wash_tip=None,
+    wash_tip_vol=300,
     drop_wash_tip=True,
     mix_vol=200,
     mix_n=10,
@@ -110,6 +112,7 @@ def bead_wash(  # global arguments
                        cols,
                        super_tiprack,
                        super_waste,
+                       tip_vol=super_tip_vol,
                        super_vol=super_vol,
                        rate=rate,
                        bottom_offset=super_bottom_offset,
@@ -134,6 +137,7 @@ def bead_wash(  # global arguments
                                             wash_vol,
                                             source_vol,
                                             tip=wash_tip,
+                                            tip_vol=wash_tip_vol,
                                             remaining=remaining,
                                             drop_tip=drop_wash_tip)
 
