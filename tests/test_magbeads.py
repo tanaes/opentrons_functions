@@ -279,3 +279,50 @@ def test_transfer_elute():
     obs = [x['payload']['text'] for x in scraper.commands]
 
     assert exp == obs
+
+
+def test_transfer_elute_mix():
+
+    protocol = get_protocol_api('2.5')
+    scraper = CommandScraper(logging.getLogger('opentrons'),
+                             '1',
+                             protocol.broker)
+
+    tips = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
+    plate = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
+                                  3, 'plate')
+    elute = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
+                                  7, 'elute')
+    pipette = protocol.load_instrument('p300_multi',
+                                       'left',
+                                       tip_racks=[tips])
+
+    cols = ['A1']
+
+    transfer_elute(pipette,
+                   plate,
+                   elute,
+                   cols,
+                   tips,
+                   50,
+                   z_offset=0.5,
+                   x_offset=1,
+                   rate=0.25,
+                   drop_tip=True,
+                   mix_n=2,
+                   mix_vol=50)
+
+    exp = ['Picking up tip from A1 of Opentrons 96 Tip Rack 300 µL on 8',
+           'Aspirating 50.0 uL from A1 of plate on 3 at 0.25 speed',
+           'Dispensing 50.0 uL into A1 of elute on 7 at 1.0 speed',
+           'Mixing 2 times with a volume of 50.0 ul',
+           'Aspirating 50.0 uL from A1 of elute on 7 at 1.0 speed',
+           'Dispensing 50.0 uL into A1 of elute on 7 at 1.0 speed',
+           'Aspirating 50.0 uL from A1 of elute on 7 at 1.0 speed',
+           'Dispensing 50.0 uL into A1 of elute on 7 at 1.0 speed',
+           'Blowing out at A1 of elute on 7',
+           'Dropping tip into A1 of Opentrons Fixed Trash on 12']
+
+    obs = [x['payload']['text'] for x in scraper.commands]
+
+    assert exp == obs

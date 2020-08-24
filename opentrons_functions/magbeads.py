@@ -64,34 +64,35 @@ def remove_supernatant(pipette,
 
 
 def bead_wash(  # global arguments
-    protocol,
-    magblock,
-    pipette,
-    plate,
-    cols,
-    # super arguments
-    super_waste,
-    super_tiprack,
-    # wash buffer arguments
-    source_wells,
-    source_vol,
-    # mix arguments
-    mix_tiprack,
-    # optional arguments
-    super_vol=600,
-    rate=0.25,
-    super_bottom_offset=2,
-    drop_super_tip=True,
-    wash_vol=300,
-    remaining=None,
-    wash_tip=None,
-    drop_wash_tip=True,
-    mix_vol=200,
-    mix_n=10,
-    drop_mix_tip=False,
-    mag_engage_height=None,
-    pause_s=300
-):
+              protocol,
+              magblock,
+              pipette,
+              plate,
+              cols,
+              # super arguments
+              super_waste,
+              super_tiprack,
+              # wash buffer arguments
+              source_wells,
+              source_vol,
+              # mix arguments
+              mix_tiprack,
+              # optional arguments
+              super_vol=600,
+              rate=0.25,
+              super_bottom_offset=2,
+              super_tip_vol=200,
+              drop_super_tip=True,
+              wash_vol=300,
+              remaining=None,
+              wash_tip=None,
+              wash_tip_vol=300,
+              drop_wash_tip=True,
+              mix_vol=200,
+              mix_n=10,
+              drop_mix_tip=False,
+              mag_engage_height=None,
+              pause_s=300):
     # Wash
 
     # This should:
@@ -110,6 +111,7 @@ def bead_wash(  # global arguments
                        cols,
                        super_tiprack,
                        super_waste,
+                       tip_vol=super_tip_vol,
                        super_vol=super_vol,
                        rate=rate,
                        bottom_offset=super_bottom_offset,
@@ -134,6 +136,7 @@ def bead_wash(  # global arguments
                                             wash_vol,
                                             source_vol,
                                             tip=wash_tip,
+                                            tip_vol=wash_tip_vol,
                                             remaining=remaining,
                                             drop_tip=drop_wash_tip)
 
@@ -174,7 +177,9 @@ def transfer_elute(pipette,
                    z_offset=0.5,
                    x_offset=1,
                    rate=0.25,
-                   drop_tip=True):
+                   drop_tip=True,
+                   mix_n=None,
+                   mix_vol=None):
 
     for col in cols:
         # determine offset
@@ -190,6 +195,11 @@ def transfer_elute(pipette,
         pipette.aspirate(vol, offset_loc, rate=rate)
         pipette.dispense(vol, dest[col])
 
+        if mix_n is not None:
+            pipette.mix(mix_n,
+                        mix_vol,
+                        dest[col].bottom(z=1))
+            pipette.blow_out(dest[col].top())
         if drop_tip:
             pipette.drop_tip()
         else:

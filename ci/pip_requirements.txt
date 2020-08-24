@@ -1,3 +1,4 @@
 coveralls
 flake8
+requests
 opentrons==3.19.0
