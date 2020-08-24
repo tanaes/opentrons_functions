@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='opentrons_functions',
-    version='0.1.0',
+    version='0.2.0',
     description='A collection of functions compatible with the Opentrons API',
     url='https://github.com/tanaes/opentrons_functions',
     author='Jon G Sanders',
@@ -19,6 +19,7 @@ setup(
         'Operating System :: POSIX :: Linux',
         'Operating System :: MacOS :: MacOS X'
         'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6'
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7'
     ],
 )
