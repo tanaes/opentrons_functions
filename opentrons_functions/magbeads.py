@@ -64,36 +64,36 @@ def remove_supernatant(pipette,
 
 
 def bead_wash(  # global arguments
-    protocol,
-    magblock,
-    pipette,
-    plate,
-    cols,
-    # super arguments
-    super_waste,
-    super_tiprack,
-    # wash buffer arguments
-    source_wells,
-    source_vol,
-    # mix arguments
-    mix_tiprack,
-    # optional arguments
-    super_vol=600,
-    rate=0.25,
-    super_bottom_offset=2,
-    super_tip_vol=200,
-    drop_super_tip=True,
-    wash_vol=300,
-    remaining=None,
-    wash_tip=None,
-    wash_tip_vol=300,
-    drop_wash_tip=True,
-    mix_vol=200,
-    mix_n=10,
-    drop_mix_tip=False,
-    mag_engage_height=None,
-    pause_s=300
-):
+              protocol,
+              magblock,
+              pipette,
+              plate,
+              cols,
+              # super arguments
+              super_waste,
+              super_tiprack,
+              # wash buffer arguments
+              source_wells,
+              source_vol,
+              # mix arguments
+              mix_tiprack,
+              # optional arguments
+              resuspend_beads=True,
+              super_vol=600,
+              rate=0.25,
+              super_bottom_offset=2,
+              super_tip_vol=200,
+              drop_super_tip=True,
+              wash_vol=300,
+              remaining=None,
+              wash_tip=None,
+              wash_tip_vol=300,
+              drop_wash_tip=True,
+              mix_vol=200,
+              mix_n=10,
+              drop_mix_tip=False,
+              mag_engage_height=None,
+              pause_s=300):
     # Wash
 
     # This should:
@@ -118,8 +118,9 @@ def bead_wash(  # global arguments
                        bottom_offset=super_bottom_offset,
                        drop_tip=drop_super_tip)
 
-    # disengage magnet
-    magblock.disengage()
+    if resuspend_beads:
+        # disengage magnet
+        magblock.disengage()
 
     # This should:
     # - Pick up tips from column 3 of location 2
@@ -129,7 +130,7 @@ def bead_wash(  # global arguments
     # - dispense to `cols` in mag plate
     # - drop tips at end
 
-    # add isopropanol
+    # add wash
     wash_wells, wash_remaining = add_buffer(pipette,
                                             source_wells,
                                             plate,
@@ -149,22 +150,23 @@ def bead_wash(  # global arguments
     # - do next col
     # - engage magnet
 
-    # mix
-    bead_mix(pipette,
-             plate,
-             cols,
-             mix_tiprack,
-             n=mix_n,
-             mix_vol=mix_vol,
-             drop_tip=drop_mix_tip)
+    if resuspend_beads:
+        # mix
+        bead_mix(pipette,
+                 plate,
+                 cols,
+                 mix_tiprack,
+                 n=mix_n,
+                 mix_vol=mix_vol,
+                 drop_tip=drop_mix_tip)
 
-    # engage magnet
-    if mag_engage_height is not None:
-        magblock.engage(height_from_base=mag_engage_height)
-    else:
-        magblock.engage()
+        # engage magnet
+        if mag_engage_height is not None:
+            magblock.engage(height_from_base=mag_engage_height)
+        else:
+            magblock.engage()
 
-    protocol.delay(seconds=pause_s)
+        protocol.delay(seconds=pause_s)
 
     return(wash_wells, wash_remaining)
 
@@ -201,7 +203,6 @@ def transfer_elute(pipette,
                         mix_vol,
                         dest[col].bottom(z=1))
             pipette.blow_out(dest[col].top())
-
         if drop_tip:
             pipette.drop_tip()
         else:

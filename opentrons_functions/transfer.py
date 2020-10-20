@@ -27,13 +27,13 @@ def add_buffer(pipette,
     transfer_vol = vol / transfers
 
     if pre_mix is not None:
-        for well in source_wells:
-            pipette.mix(pre_mix,
-                        tip_vol*.9,
-                        well)
+        pipette.mix(pre_mix,
+                    tip_vol*.9,
+                    source_well)
 
     for col in cols:
         for i in range(0, transfers):
+
             pipette.aspirate(transfer_vol,
                              source_well)
             pipette.air_gap(10)
@@ -46,6 +46,10 @@ def add_buffer(pipette,
                 source_wells.pop(0)
                 try:
                     source_well = source_wells[0]
+                    if pre_mix is not None:
+                        pipette.mix(pre_mix,
+                                    tip_vol*.9,
+                                    source_well)
                 except IndexError:
                     print('Ran out of source wells!')
                     raise

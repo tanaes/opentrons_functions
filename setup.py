@@ -10,7 +10,8 @@ setup(
     license='MIT License',
     packages=find_packages(),
     install_requires=['numpy',
-                      'opentrons'],
+                      'opentrons',
+                      'pytest'],
 
     classifiers=[
         'Development Status :: 1 - Planning',
