@@ -11,7 +11,8 @@ setup(
     packages=find_packages(),
     install_requires=['numpy',
                       'opentrons',
-                      'pytest'],
+                      'pytest',
+                      'requests'],
 
     classifiers=[
         'Development Status :: 1 - Planning',
