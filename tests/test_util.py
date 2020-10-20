@@ -1,4 +1,4 @@
-from opentrons_functions.util import (odd_or_even)
+from opentrons_functions.util import odd_or_even
 
 
 def test_odd_or_even():
