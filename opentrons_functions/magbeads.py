@@ -63,7 +63,7 @@ def remove_supernatant(pipette,
     return()
 
 
-def bead_wash(  # global arguments
+def bead_wash(# global arguments
               protocol,
               magblock,
               pipette,
