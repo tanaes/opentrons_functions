@@ -106,6 +106,32 @@ def test_add_buffer_fullplate():
     assert source_wells == [reagents['A2']]
 
 
+def test_add_buffer_even():
+    protocol = get_protocol_api(apilevel)
+
+    tips = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
+    plate = protocol.load_labware('biorad_96_wellplate_200ul_pcr',
+                                  3, 'plate')
+    reagents = protocol.load_labware('usascientific_12_reservoir_22ml',
+                                     9, 'reagents')
+    pipette = protocol.load_instrument('p300_multi',
+                                       'left',
+                                       tip_racks=[tips])
+
+    remaining, source_wells = add_buffer(pipette,
+                                         [reagents['A1'],
+                                          reagents['A2']],
+                                         plate,
+                                         ['A1', 'A2', 'A3', 'A4',
+                                          'A5', 'A6', 'A7', 'A8'],
+                                         30,
+                                         200,
+                                         dead_vol=100)
+
+    assert remaining == 100
+    assert source_wells == [reagents['A2']]
+
+
 def test_get_96_from_384_wells_interleaved():
     a = [x for x in get_96_from_384_wells(method='interleaved', start=1)][0:3]
     b = [x for x in get_96_from_384_wells(method='interleaved', start=2)][0:3]
