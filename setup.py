@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='opentrons_functions',
-    version='0.2.4',
+    version='0.2.5',
     description='A collection of functions compatible with the Opentrons API',
     url='https://github.com/tanaes/opentrons_functions',
     author='Jon G Sanders',
