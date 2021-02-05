@@ -89,6 +89,7 @@ def bead_wash(# global arguments
               wash_tip=None,
               wash_tip_vol=300,
               drop_wash_tip=True,
+              touch_wash_tip=False,
               mix_vol=200,
               mix_n=10,
               drop_mix_tip=False,
@@ -140,7 +141,8 @@ def bead_wash(# global arguments
                                             tip=wash_tip,
                                             tip_vol=wash_tip_vol,
                                             remaining=remaining,
-                                            drop_tip=drop_wash_tip)
+                                            drop_tip=drop_wash_tip,
+                                            touch_tip=touch_wash_tip)
 
     # This should:
     # - grab a tip from position 8
