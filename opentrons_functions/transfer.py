@@ -14,7 +14,7 @@ def add_buffer(pipette,
                touch_tip=False,
                pre_mix=None,
                dead_vol=1000 / 8):
-    log=''
+    log = ''
 
     if tip is not None:
         pipette.pick_up_tip(tip)
@@ -67,7 +67,7 @@ def add_buffer(pipette,
             pipette.dispense(transfer_vol + 10,
                              dest[col].top())
             log += 'Transferring {0} to {1}\n'.format(source_well,
-                                                    col)
+                                                      col)
             if touch_tip:
                 pipette.touch_tip()
                 log += 'Touching tip \n'

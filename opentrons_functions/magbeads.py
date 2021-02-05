@@ -63,21 +63,21 @@ def remove_supernatant(pipette,
     return()
 
 
-def bead_wash(# global arguments
+def bead_wash(  # global arguments
               protocol,
               magblock,
               pipette,
               plate,
               cols,
-              # super arguments
+                # super arguments
               super_waste,
               super_tiprack,
-              # wash buffer arguments
+                # wash buffer arguments
               source_wells,
               source_vol,
-              # mix arguments
+                # mix arguments
               mix_tiprack,
-              # optional arguments
+                # optional arguments
               resuspend_beads=True,
               super_vol=600,
               rate=0.25,
