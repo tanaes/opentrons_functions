@@ -10,12 +10,16 @@ def bead_mix(pipette,
              n=5,
              z_offset=2,
              mix_vol=200,
+             mix_lift=0,
              drop_tip=False):
     for col in cols:
         pipette.pick_up_tip(tiprack.wells_by_name()[col])
-        pipette.mix(n,
-                    mix_vol,
-                    plate[col].bottom(z=z_offset))
+        for step in range(n):
+            pipette.aspirate(mix_vol,
+                             plate[col].bottom(z=z_offset))
+            pipette.dispense(mix_vol,
+                             plate[col].bottom(z=z_offset + mix_lift))
+
         pipette.blow_out(plate[col].top())
 
         if drop_tip:
@@ -92,6 +96,8 @@ def bead_wash(  # global arguments
               touch_wash_tip=False,
               mix_vol=200,
               mix_n=10,
+              mix_z_offset=2,
+              mix_lift=0,
               drop_mix_tip=False,
               mag_engage_height=None,
               pause_s=300):
@@ -160,7 +166,9 @@ def bead_wash(  # global arguments
                  mix_tiprack,
                  n=mix_n,
                  mix_vol=mix_vol,
-                 drop_tip=drop_mix_tip)
+                 drop_tip=drop_mix_tip,
+                 z_offset=mix_z_offset,
+                 mix_lift=mix_lift)
 
         # engage magnet
         if mag_engage_height is not None:
