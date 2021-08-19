@@ -22,7 +22,8 @@ def bead_mix(pipette,
                              plate[col].bottom(z=z_offset + mix_lift))
 
         pipette.blow_out(plate[col].top())
-
+        pipette.aspirate(20)
+        
         if drop_tip:
             pipette.drop_tip()
         else:
