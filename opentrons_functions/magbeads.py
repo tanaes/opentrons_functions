@@ -45,7 +45,7 @@ def remove_supernatant(pipette,
 
     # remove supernatant
     if vol_fn is None:
-        def vol_fn(x): return(190 if x > 190 else 4)
+        def vol_fn(x): return(4 if x > 190 else bottom_offset)
 
     for col in cols:
         vol_remaining = super_vol
