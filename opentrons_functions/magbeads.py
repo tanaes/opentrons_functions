@@ -53,6 +53,8 @@ def remove_supernatant(pipette,
 
         # transfers to remove supernatant:
         pipette.pick_up_tip(tiprack.wells_by_name()[col])
+
+        dispense_gap = False
         while vol_remaining > 0:
 
             transfer_vol = min(vol_remaining, (tip_vol - 10))
@@ -61,6 +63,10 @@ def remove_supernatant(pipette,
             if z_height < bottom_offset:
                 z_height = bottom_offset
 
+            if dispense_gap:
+                pipette.move_to(plate[col].top())
+                pipette.dispense(10)
+
             pipette.aspirate(transfer_vol,
                              plate[col].bottom(z=z_height),
                              rate=rate)
@@ -68,7 +74,8 @@ def remove_supernatant(pipette,
             pipette.dispense(transfer_vol,
                              waste.top(),
                              rate=dispense_rate)
-            pipette.air_gap(10)
+            pipette.aspirate(10)
+            dispense_gap = True
             vol_remaining -= transfer_vol
         # we're done with these tips at this point
         if blow_out:
