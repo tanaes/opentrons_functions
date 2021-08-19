@@ -68,6 +68,7 @@ def remove_supernatant(pipette,
             pipette.dispense(transfer_vol + 10,
                              waste.top(),
                              rate=dispense_rate)
+            pipette.air_gap(20)
             vol_remaining -= transfer_vol
         # we're done with these tips at this point
         if blow_out:
