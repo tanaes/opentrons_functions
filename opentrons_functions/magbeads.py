@@ -14,6 +14,7 @@ def bead_mix(pipette,
              drop_tip=False):
     for col in cols:
         pipette.pick_up_tip(tiprack.wells_by_name()[col])
+
         for step in range(n):
             pipette.aspirate(mix_vol,
                              plate[col].bottom(z=z_offset))
@@ -38,28 +39,38 @@ def remove_supernatant(pipette,
                        tip_vol=200,
                        rate=0.25,
                        bottom_offset=2,
-                       drop_tip=False):
+                       blow_out=False,
+                       drop_tip=False,
+                       vol_fn=None):
 
     # remove supernatant
+    if vol_fn is None:
+        def vol_fn(x): return(190 if x > 190 else 4)
 
     for col in cols:
         vol_remaining = super_vol
+
         # transfers to remove supernatant:
         pipette.pick_up_tip(tiprack.wells_by_name()[col])
         while vol_remaining > 0:
+
             transfer_vol = min(vol_remaining, (tip_vol - 10))
-            if vol_remaining <= 190:
+
+            z_height = vol_fn(vol_remaining - transfer_vol)
+            if z_height < bottom_offset:
                 z_height = bottom_offset
-            else:
-                z_height = 4
+
             pipette.aspirate(transfer_vol,
                              plate[col].bottom(z=z_height),
                              rate=rate)
             pipette.air_gap(10)
-            pipette.dispense(transfer_vol + 10, waste.top())
+            pipette.dispense(transfer_vol + 10,
+                             waste.top(),
+                             rate=rate)
             vol_remaining -= transfer_vol
         # we're done with these tips at this point
-        pipette.blow_out()
+        if blow_out:
+            pipette.blow_out()
         if drop_tip:
             pipette.drop_tip()
         else:
@@ -87,7 +98,9 @@ def bead_wash(  # global arguments
               rate=0.25,
               super_bottom_offset=2,
               super_tip_vol=200,
+              super_blowout=False,
               drop_super_tip=True,
+              vol_fn=None,
               wash_vol=300,
               remaining=None,
               wash_tip=None,
@@ -123,7 +136,9 @@ def bead_wash(  # global arguments
                        super_vol=super_vol,
                        rate=rate,
                        bottom_offset=super_bottom_offset,
-                       drop_tip=drop_super_tip)
+                       drop_tip=drop_super_tip,
+                       blow_out=super_blowout,
+                       vol_fn=vol_fn)
 
     if resuspend_beads:
         # disengage magnet
