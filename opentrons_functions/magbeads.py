@@ -46,7 +46,7 @@ def remove_supernatant(pipette,
 
     # remove supernatant
     if vol_fn is None:
-        def vol_fn(x): return(4 if x > 190 else bottom_offset)
+        def vol_fn(x): return(4 if x > 185 else bottom_offset)
 
     for col in cols:
         vol_remaining = super_vol
@@ -57,7 +57,7 @@ def remove_supernatant(pipette,
         dispense_gap = False
         while vol_remaining > 0:
 
-            transfer_vol = min(vol_remaining, (tip_vol - 10))
+            transfer_vol = min(vol_remaining, (tip_vol - 15))
 
             z_height = vol_fn(vol_remaining - transfer_vol)
             if z_height < bottom_offset:
