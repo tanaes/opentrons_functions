@@ -57,7 +57,7 @@ def remove_supernatant(pipette,
         dispense_gap = False
         while vol_remaining > 0:
 
-            transfer_vol = min(vol_remaining, (tip_vol - 15))
+            transfer_vol = min(vol_remaining, (tip_vol - 10))
 
             z_height = vol_fn(vol_remaining - transfer_vol)
             if z_height < bottom_offset:
@@ -71,7 +71,7 @@ def remove_supernatant(pipette,
                              plate[col].bottom(z=z_height),
                              rate=rate)
             pipette.air_gap(10)
-            pipette.dispense(transfer_vol,
+            pipette.dispense(transfer_vol + 10,
                              waste.top(),
                              rate=dispense_rate)
             pipette.aspirate(10)
