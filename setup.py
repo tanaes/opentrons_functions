@@ -9,10 +9,7 @@ setup(
     author_email='jonsan@gmail.com',
     license='MIT License',
     packages=find_packages(),
-    install_requires=['numpy',
-                      'opentrons',
-                      'pytest',
-                      'requests'],
+    install_requires=[],
 
     classifiers=[
         'Development Status :: 1 - Planning',
