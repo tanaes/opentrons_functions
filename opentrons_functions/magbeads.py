@@ -12,9 +12,18 @@ def bead_mix(pipette,
              mix_vol=200,
              mix_lift=0,
              drop_tip=False):
-    for col in cols:
-        pipette.pick_up_tip(tiprack.wells_by_name()[col])
+    if tiprack is None:
+        pipette.pick_up_tip()
+    aspirated = False
 
+    for col in cols:
+        if tiprack is not None:
+            pipette.pick_up_tip(tiprack.wells_by_name()[col])
+
+        pipette.move_to(plate[col].top())
+        if aspirated:
+            pipette.dispense(20)
+            aspirated=False
         for step in range(n):
             pipette.aspirate(mix_vol,
                              plate[col].bottom(z=z_offset))
@@ -24,7 +33,15 @@ def bead_mix(pipette,
         pipette.blow_out(plate[col].top())
         pipette.touch_tip()
         pipette.aspirate(20)
+        aspirated = True
 
+        if tiprack is not None:
+            if drop_tip:
+                pipette.drop_tip()
+            else:
+                pipette.return_tip()
+
+    if tiprack is None:
         if drop_tip:
             pipette.drop_tip()
         else:
